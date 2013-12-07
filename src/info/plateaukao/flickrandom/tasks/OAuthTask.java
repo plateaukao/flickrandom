@@ -83,7 +83,7 @@ public class OAuthTask extends AsyncTask<Void, Integer, String> {
 			Flickr f = FlickrHelper.getInstance().getFlickr();
 			OAuthToken oauthToken = f.getOAuthInterface().getRequestToken(OAUTH_CALLBACK_URI.toString());
 			saveTokenSecrent(oauthToken.getOauthTokenSecret());
-			URL oauthUrl = f.getOAuthInterface().buildAuthenticationUrl(Permission.READ, oauthToken);
+			URL oauthUrl = f.getOAuthInterface().buildAuthenticationUrl(Permission.WRITE, oauthToken);
 			return oauthUrl.toString();
 		} catch (Exception e) {
 			//logger.error("Error to oauth", e); //$NON-NLS-1$

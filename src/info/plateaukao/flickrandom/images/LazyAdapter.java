@@ -4,6 +4,7 @@
 package info.plateaukao.flickrandom.images;
 
 import info.plateaukao.flickrandom.R;
+import info.plateaukao.flickrandom.tasks.AddTagTask;
 import info.plateaukao.flickrandom.tasks.LoadRandomPhotostreamTask;
 import info.plateaukao.flickrandom.utils.Utils;
 
@@ -25,6 +26,7 @@ import android.widget.TextView;
 
 import com.googlecode.flickrjandroid.photos.Photo;
 import com.googlecode.flickrjandroid.photos.PhotoList;
+import com.googlecode.flickrjandroid.tags.Tag;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -173,6 +175,7 @@ public class LazyAdapter extends BaseAdapter {
 		TextView tvSet;
 		TextView tvDate;
 		ImageView ivPhoto;
+		ImageView ivTag;
 
 		private Photo photo;
 
@@ -182,6 +185,7 @@ public class LazyAdapter extends BaseAdapter {
 			tvTitle = (TextView) v.findViewById(R.id.imageTitle);
 			tvSet = (TextView) v.findViewById(R.id.imageSet);
 			tvDate = (TextView) v.findViewById(R.id.imageDate);
+			ivTag = (ImageView)v.findViewById(R.id.imageTag);
 
 			ivPhoto.setOnClickListener(new View.OnClickListener() {
 
@@ -194,6 +198,16 @@ public class LazyAdapter extends BaseAdapter {
 
 				}
 			});
+			
+			ivTag.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					if(!hasTagWithName(photo, "Favorite"))
+						new AddTagTask(activity, (ImageView)v, photo, "Favorite").execute(Utils.getOAuthToken());
+
+				}
+			});
 		}
 
 		public void updateData(Photo p) {
@@ -203,8 +217,21 @@ public class LazyAdapter extends BaseAdapter {
 			tvSet.setText("");
 			if(photo.getDateTaken() != null)
 				tvDate.setText(photo.getDateTaken().toString());
+			if(hasTagWithName(photo, "Favorite")){
+				ivTag.setImageResource(android.R.drawable.btn_star_big_on);
+			}else
+				ivTag.setImageResource(android.R.drawable.btn_star_big_off);
+			
 			imageLoader.displayImage(photo.getMediumUrl(), ivPhoto, options,
 					animateFirstListener);
 		}
+	}
+	
+	boolean hasTagWithName(Photo photo, String tagName){
+		for(Tag tag: photo.getTags()){
+			if(tag.getValue().equals(tagName))
+				return true;
+		}
+		return false;
 	}
 }

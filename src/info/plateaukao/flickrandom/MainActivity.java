@@ -36,7 +36,9 @@ public class MainActivity extends BaseActivity {
 		setContentView(R.layout.main);
 
 		this.listView = (ListView) this.findViewById(R.id.imageList);
-		adapter = new LazyAdapter(this);
+		adapter = (LazyAdapter)this.getLastNonConfigurationInstance();
+		if(null == adapter)
+			adapter = new LazyAdapter(this);
 		this.listView.setAdapter(adapter);
 
 		oauth = Utils.getOAuthToken();
@@ -44,9 +46,19 @@ public class MainActivity extends BaseActivity {
 			OAuthTask task = new OAuthTask(this);
 			task.execute();
 		} else {
-			load(oauth);
+			if(adapter.isEmpty())
+				load(oauth);
 		}
 	}
+
+	
+	@Override
+	@Deprecated
+	public Object onRetainNonConfigurationInstance() {
+		return adapter;
+	}
+	
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
