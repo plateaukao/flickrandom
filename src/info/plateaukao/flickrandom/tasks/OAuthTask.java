@@ -80,11 +80,9 @@ public class OAuthTask extends AsyncTask<Void, Integer, String> {
 	protected String doInBackground(Void... params) {
 		try {
 			Flickr f = FlickrHelper.getInstance().getFlickr();
-			OAuthToken oauthToken = f.getOAuthInterface().getRequestToken(
-					OAUTH_CALLBACK_URI.toString());
+			OAuthToken oauthToken = f.getOAuthInterface().getRequestToken(OAUTH_CALLBACK_URI.toString());
 			saveTokenSecrent(oauthToken.getOauthTokenSecret());
-			URL oauthUrl = f.getOAuthInterface().buildAuthenticationUrl(
-					Permission.READ, oauthToken);
+			URL oauthUrl = f.getOAuthInterface().buildAuthenticationUrl(Permission.READ, oauthToken);
 			return oauthUrl.toString();
 		} catch (Exception e) {
 			//logger.error("Error to oauth", e); //$NON-NLS-1$
@@ -110,8 +108,7 @@ public class OAuthTask extends AsyncTask<Void, Integer, String> {
 			mProgressDialog.dismiss();
 		}
 		if (result != null && !result.startsWith("error") ) { //$NON-NLS-1$
-			mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri
-					.parse(result)));
+			mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(result)));
 		} else {
 			Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
 		}

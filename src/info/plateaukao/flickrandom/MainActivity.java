@@ -1,7 +1,7 @@
 package info.plateaukao.flickrandom;
 
 import info.plateaukao.flickrandom.tasks.GetOAuthTokenTask;
-import info.plateaukao.flickrandom.tasks.LoadPhotostreamTask;
+import info.plateaukao.flickrandom.tasks.LoadRandomPhotostreamTask;
 import info.plateaukao.flickrandom.tasks.LoadUserTask;
 import info.plateaukao.flickrandom.tasks.OAuthTask;
 
@@ -28,7 +28,7 @@ import com.googlecode.flickrjandroid.oauth.OAuthToken;
 import com.googlecode.flickrjandroid.people.User;
 
 public class MainActivity extends Activity {
-	public static final String CALLBACK_SCHEME = "flickrj-android-sample-oauth"; //$NON-NLS-1$
+	public static final String CALLBACK_SCHEME = "flickrandom-oauth"; //$NON-NLS-1$
 	public static final String PREFS_NAME = "flickrj-android-sample-pref"; //$NON-NLS-1$
 	public static final String KEY_OAUTH_TOKEN = "flickrj-android-oauthToken"; //$NON-NLS-1$
 	public static final String KEY_TOKEN_SECRET = "flickrj-android-tokenSecret"; //$NON-NLS-1$
@@ -123,7 +123,8 @@ public class MainActivity extends Activity {
 	private void load(OAuth oauth) {
 		if (oauth != null) {
 			new LoadUserTask(this, userIcon).execute(oauth);
-			new LoadPhotostreamTask(this, listView).execute(oauth);
+			//new LoadPhotostreamTask(this, listView).execute(oauth);
+			new LoadRandomPhotostreamTask(this, listView).execute(oauth);
 		}
 	}
 	public void setUser(User user) {
