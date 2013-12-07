@@ -7,7 +7,6 @@ import info.plateaukao.flickrandom.tasks.OAuthTask;
 
 import java.util.Locale;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,7 +26,7 @@ import com.googlecode.flickrjandroid.oauth.OAuth;
 import com.googlecode.flickrjandroid.oauth.OAuthToken;
 import com.googlecode.flickrjandroid.people.User;
 
-public class MainActivity extends Activity {
+public class MainActivity extends BaseActivity {
 	public static final String CALLBACK_SCHEME = "flickrandom-oauth"; //$NON-NLS-1$
 	public static final String PREFS_NAME = "flickrj-android-sample-pref"; //$NON-NLS-1$
 	public static final String KEY_OAUTH_TOKEN = "flickrj-android-oauthToken"; //$NON-NLS-1$
