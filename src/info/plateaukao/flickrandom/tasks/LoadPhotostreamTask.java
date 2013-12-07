@@ -5,7 +5,6 @@ package info.plateaukao.flickrandom.tasks;
 
 
 import info.plateaukao.flickrandom.FlickrHelper;
-import info.plateaukao.flickrandom.images.LazyAdapter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -65,9 +64,9 @@ public class LoadPhotostreamTask extends AsyncTask<OAuth, Void, PhotoList> {
 	@Override
 	protected void onPostExecute(PhotoList result) {
 		if (result != null) {
-			LazyAdapter adapter = 
-					new LazyAdapter(this.activity, result);
-			this.listView.setAdapter(adapter);
+			//LazyAdapter adapter = 
+					//new LazyAdapter(this.activity, result);
+			//this.listView.setAdapter(adapter);
 		}
 	}
 	

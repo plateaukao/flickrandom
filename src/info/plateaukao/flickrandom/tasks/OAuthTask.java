@@ -6,6 +6,7 @@ package info.plateaukao.flickrandom.tasks;
 
 import info.plateaukao.flickrandom.FlickrHelper;
 import info.plateaukao.flickrandom.MainActivity;
+import info.plateaukao.flickrandom.utils.Utils;
 
 import java.net.URL;
 
@@ -98,7 +99,7 @@ public class OAuthTask extends AsyncTask<Void, Integer, String> {
 	private void saveTokenSecrent(String tokenSecret) {
 		//logger.debug("request token: " + tokenSecret); //$NON-NLS-1$
 		MainActivity act = (MainActivity) mContext;
-		act.saveOAuthToken(null, null, null, tokenSecret);
+		Utils.saveOAuthToken(null, null, null, tokenSecret);
 		//logger.debug("oauth token secret saved: {}", tokenSecret); //$NON-NLS-1$
 	}
 

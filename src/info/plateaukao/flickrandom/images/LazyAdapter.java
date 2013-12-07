@@ -4,6 +4,8 @@
 package info.plateaukao.flickrandom.images;
 
 import info.plateaukao.flickrandom.R;
+import info.plateaukao.flickrandom.tasks.LoadRandomPhotostreamTask;
+import info.plateaukao.flickrandom.utils.Utils;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -39,18 +41,31 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
  */
 public class LazyAdapter extends BaseAdapter {
 
+	private static int STATUS_NORMAL = 0;
+	private static int STATUS_LOADING = 1;
+	private int status = STATUS_NORMAL;
+
+	private static int PRELOAD_WINDOW = 10;
+
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
-	
+
 	private Activity activity;
 	private PhotoList photos;
 	private static LayoutInflater inflater = null;
 
 	DisplayImageOptions options;
 
-	public LazyAdapter(Activity a, PhotoList d) {
+	private int currentPageCount;
+
+	public void setCurrentPageCount(int pageCount) {
+		currentPageCount = pageCount;
+	};
+
+	public LazyAdapter(Activity a) {
 		activity = a;
-		photos = d;
+		photos = new PhotoList();
+
 		inflater = (LayoutInflater) activity
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -61,15 +76,14 @@ public class LazyAdapter extends BaseAdapter {
 				.tasksProcessingOrder(QueueProcessingType.LIFO)
 				.writeDebugLogs() // Remove for release app
 				.build();
-		
+
 		// Initialize ImageLoader with configuration.
 		ImageLoader.getInstance().init(config);
 
 		options = new DisplayImageOptions.Builder()
 				.showImageOnLoading(R.drawable.ic_stub)
 				.showImageForEmptyUri(R.drawable.ic_empty)
-				.showImageOnFail(R.drawable.ic_error)
-				.cacheInMemory(true)
+				.showImageOnFail(R.drawable.ic_error).cacheInMemory(true)
 				// .cacheOnDisc(true)
 				.considerExifParams(true)
 				.displayer(new RoundedBitmapDisplayer(20)).build();
@@ -87,8 +101,25 @@ public class LazyAdapter extends BaseAdapter {
 		return position;
 	}
 
+	public void addAll(PhotoList list) {
+		photos.addAll(list);
+		status = STATUS_NORMAL;
+	}
+
+	public void clear(){
+		photos.clear();
+	}
+	
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View vi = convertView;
+		// trigger loadmore
+		if (getCount() - position < PRELOAD_WINDOW && status == STATUS_NORMAL) {
+			new LoadRandomPhotostreamTask(activity, this, currentPageCount + 1)
+					.execute(Utils.getOAuthToken());
+
+			status = STATUS_LOADING;
+		}
+
 		if (convertView == null)
 			vi = inflater.inflate(R.layout.row, null);
 
@@ -125,7 +156,7 @@ public class LazyAdapter extends BaseAdapter {
 		Photo photo = photos.get(position);
 		text.setText(photo.getTitle());
 		if (image != null) {
-			imageLoader.displayImage(photo.getSmallSquareUrl(), image, options,
+			imageLoader.displayImage(photo.getSmallUrl(), image, options,
 					animateFirstListener);
 			/*
 			 * ImageDownloadTask task = new ImageDownloadTask(image); Drawable
@@ -147,21 +178,24 @@ public class LazyAdapter extends BaseAdapter {
 
 		return vi;
 	}
-	
-    private static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
 
-        static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
+	private static class AnimateFirstDisplayListener extends
+			SimpleImageLoadingListener {
 
-        @Override
-        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                if (loadedImage != null) {
-                        ImageView imageView = (ImageView) view;
-                        boolean firstDisplay = !displayedImages.contains(imageUri);
-                        if (firstDisplay) {
-                                FadeInBitmapDisplayer.animate(imageView, 300);
-                                displayedImages.add(imageUri);
-                        }
-                }
-        }
-}
+		static final List<String> displayedImages = Collections
+				.synchronizedList(new LinkedList<String>());
+
+		@Override
+		public void onLoadingComplete(String imageUri, View view,
+				Bitmap loadedImage) {
+			if (loadedImage != null) {
+				ImageView imageView = (ImageView) view;
+				boolean firstDisplay = !displayedImages.contains(imageUri);
+				if (firstDisplay) {
+					FadeInBitmapDisplayer.animate(imageView, 500);
+					displayedImages.add(imageUri);
+				}
+			}
+		}
+	}
 }
