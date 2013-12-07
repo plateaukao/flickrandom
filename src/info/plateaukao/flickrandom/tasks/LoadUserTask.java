@@ -6,12 +6,9 @@ package info.plateaukao.flickrandom.tasks;
 
 import info.plateaukao.flickrandom.FlickrHelper;
 import info.plateaukao.flickrandom.MainActivity;
-import info.plateaukao.flickrandom.images.ImageUtils.DownloadedDrawable;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -20,7 +17,7 @@ import com.googlecode.flickrjandroid.oauth.OAuth;
 import com.googlecode.flickrjandroid.oauth.OAuthToken;
 import com.googlecode.flickrjandroid.people.User;
 
-public class LoadUserTask extends AsyncTask<OAuth, Void, User> {
+public class LoadUserTask extends BaseAsyncTask<OAuth, Void, User> {
 	/**
 	 * 
 	 */
@@ -87,10 +84,8 @@ public class LoadUserTask extends AsyncTask<OAuth, Void, User> {
 		if (user.getBuddyIconUrl() != null) {
 			String buddyIconUrl = user.getBuddyIconUrl();
 	        if (userIconImage != null) {
-	        	ImageDownloadTask task = new ImageDownloadTask(userIconImage);
-	            Drawable drawable = new DownloadedDrawable(task);
-	            userIconImage.setImageDrawable(drawable);
-	            task.execute(buddyIconUrl);
+	    			imageLoader.displayImage(buddyIconUrl, userIconImage, null,
+	    					null);
 	        }
 		}
 	}

@@ -4,9 +4,15 @@
 package info.plateaukao.flickrandom.images;
 
 import info.plateaukao.flickrandom.R;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +27,10 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 /**
@@ -31,6 +40,8 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 public class LazyAdapter extends BaseAdapter {
 
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
+	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
+	
 	private Activity activity;
 	private PhotoList photos;
 	private static LayoutInflater inflater = null;
@@ -55,9 +66,9 @@ public class LazyAdapter extends BaseAdapter {
 		ImageLoader.getInstance().init(config);
 
 		options = new DisplayImageOptions.Builder()
-				// .showImageOnLoading(R.drawable.ic_stub)
-				// .showImageForEmptyUri(R.drawable.ic_empty)
-				// .showImageOnFail(R.drawable.ic_error)
+				.showImageOnLoading(R.drawable.ic_stub)
+				.showImageForEmptyUri(R.drawable.ic_empty)
+				.showImageOnFail(R.drawable.ic_error)
 				.cacheInMemory(true)
 				// .cacheOnDisc(true)
 				.considerExifParams(true)
@@ -115,7 +126,7 @@ public class LazyAdapter extends BaseAdapter {
 		text.setText(photo.getTitle());
 		if (image != null) {
 			imageLoader.displayImage(photo.getSmallSquareUrl(), image, options,
-					null);
+					animateFirstListener);
 			/*
 			 * ImageDownloadTask task = new ImageDownloadTask(image); Drawable
 			 * drawable = new DownloadedDrawable(task);
@@ -136,4 +147,21 @@ public class LazyAdapter extends BaseAdapter {
 
 		return vi;
 	}
+	
+    private static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
+
+        static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
+
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                if (loadedImage != null) {
+                        ImageView imageView = (ImageView) view;
+                        boolean firstDisplay = !displayedImages.contains(imageUri);
+                        if (firstDisplay) {
+                                FadeInBitmapDisplayer.animate(imageView, 300);
+                                displayedImages.add(imageUri);
+                        }
+                }
+        }
+}
 }

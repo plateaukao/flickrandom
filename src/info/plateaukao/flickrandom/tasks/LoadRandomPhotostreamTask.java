@@ -61,7 +61,7 @@ public class LoadRandomPhotostreamTask extends AsyncTask<OAuth, Void, PhotoList>
 			//return f.getPeopleInterface().getPhotos(user.getId(), extras, 20, 1);
 
 			SearchParameters params = new SearchParameters();
-			String[] str = {"tobeposted}"};
+			//String[] str = {"tobeposted}"};
 			//params.setTags(str);
 			params.setUserId(user.getId());
 			if(total != 0)
