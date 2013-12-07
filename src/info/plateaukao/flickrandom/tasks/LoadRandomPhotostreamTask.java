@@ -8,6 +8,7 @@ import info.plateaukao.flickrandom.FlickrHelper;
 import info.plateaukao.flickrandom.images.LazyAdapter;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import android.app.Activity;
@@ -31,6 +32,8 @@ public class LoadRandomPhotostreamTask extends AsyncTask<OAuth, Void, PhotoList>
 	
 	private int pageSize = 20;
 	private int pageCount = 1;
+	private static int total = 0;
+	private final static Random random = new Random();
 
 	/**
 	 * @param flickrjAndroidSampleActivity
@@ -59,9 +62,17 @@ public class LoadRandomPhotostreamTask extends AsyncTask<OAuth, Void, PhotoList>
 
 			SearchParameters params = new SearchParameters();
 			String[] str = {"tobeposted}"};
-			params.setTags(str);
+			//params.setTags(str);
 			params.setUserId(user.getId());
-			return f.getPhotosInterface().search(params, pageSize, pageCount);
+			if(total != 0)
+				pageCount = random.nextInt(total/pageSize);
+			else
+				pageCount = random.nextInt(80000/pageSize);
+
+			PhotoList list = f.getPhotosInterface().search(params, pageSize, pageCount);
+			total = list.getTotal();
+
+			return list;
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
