@@ -13,61 +13,31 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.view.MenuItem;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.googlecode.flickrjandroid.oauth.OAuth;
 import com.googlecode.flickrjandroid.oauth.OAuthToken;
 import com.googlecode.flickrjandroid.people.User;
 
-public class MainActivity extends BaseActivity{
+public class MainActivity extends BaseActivity {
 	public static final String CALLBACK_SCHEME = "flickrandom-oauth"; //$NON-NLS-1$
 
-
 	private ListView listView;
-	private TextView textUserTitle;
-	private TextView textUserName;
-	private TextView textUserId;
-	private ImageView userIcon;
-	private ImageButton refreshButton;
-	
+	private LazyAdapter adapter;
+
 	private OAuth oauth;
 	private User user;
-
-	private LoadRandomPhotostreamTask mLoadRandomPhotosTask;
-	private LazyAdapter adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		this.textUserTitle = (TextView) this
-				.findViewById(R.id.profilePageTitle);
-		this.textUserName = (TextView) this.findViewById(R.id.userScreenName);
-		this.textUserId = (TextView) this.findViewById(R.id.userId);
-		this.userIcon = (ImageView) this.findViewById(R.id.userImage);
 		this.listView = (ListView) this.findViewById(R.id.imageList);
 		adapter = new LazyAdapter(this);
 		this.listView.setAdapter(adapter);
-		
-		this.refreshButton = (ImageButton) this
-				.findViewById(R.id.btnRefreshUserProfile);
-
-		this.refreshButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				((LazyAdapter)listView.getAdapter()).clear();
-				((LazyAdapter)listView.getAdapter()).notifyDataSetChanged();
-
-				load(Utils.getOAuthToken());
-			}
-		});
 
 		oauth = Utils.getOAuthToken();
 		if (oauth == null || oauth.getUser() == null) {
@@ -80,12 +50,30 @@ public class MainActivity extends BaseActivity{
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		// getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.mi_refresh: {
+			((LazyAdapter) listView.getAdapter()).clear();
+			((LazyAdapter) listView.getAdapter()).notifyDataSetChanged();
 
+			load(Utils.getOAuthToken());
+			return true;
+		}
+		case R.id.mi_loginout:
+		{
+			
+			return true;
+		}
+		default:
+		}
+
+		return super.onMenuItemSelected(featureId, item);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -101,33 +89,23 @@ public class MainActivity extends BaseActivity{
 
 	private void load(OAuth oauth) {
 		if (oauth != null) {
-			if(null == user)
-				new LoadUserTask(this, userIcon).execute(oauth);
+			if (null == user)
+				new LoadUserTask(this).execute(oauth);
 			// new LoadPhotostreamTask(this, listView).execute(oauth);
 			new LoadRandomPhotostreamTask(this, adapter, 0).execute(oauth);
 		}
 	}
 
-	public void setUser(User user) {
-		textUserTitle.setText(user.getUsername());
-		textUserName.setText(user.getRealName());
-		textUserId.setText(user.getId());
-	}
-
-	public ImageView getUserIconImageView() {
-		return this.userIcon;
-	}
-
 	@Override
 	public void onResume() {
 		super.onResume();
+
+
 		Intent intent = getIntent();
 		String scheme = intent.getScheme();
-		OAuth savedToken = Utils.getOAuthToken();
-		user = savedToken.getUser();
 		
 		if (CALLBACK_SCHEME.equals(scheme)
-				&& (savedToken == null || savedToken.getUser() == null)) {
+				&& (oauth == null || oauth.getUser() == null)) {
 			Uri uri = intent.getData();
 			String query = uri.getQuery();
 			//logger.debug("Returned Query: {}", query); //$NON-NLS-1$
@@ -148,6 +126,8 @@ public class MainActivity extends BaseActivity{
 			}
 		}
 
+		if(null != oauth)
+			user = oauth.getUser();
 	}
 
 	public void onOAuthDone(OAuth result) {
@@ -172,7 +152,7 @@ public class MainActivity extends BaseActivity{
 			Toast.makeText(this, message, Toast.LENGTH_LONG).show();
 			Utils.saveOAuthToken(user.getUsername(), user.getId(),
 					token.getOauthToken(), token.getOauthTokenSecret());
-			if(null!=result)
+			if (null != result)
 				oauth = result;
 			load(oauth);
 		}

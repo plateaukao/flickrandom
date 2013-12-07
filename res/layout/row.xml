@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight"
-    android:padding="6dip" >
-
-    <ImageView
-        android:id="@+id/imageIcon"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginRight="10dp"
-        android:src="@drawable/icon" />
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="400dp" >
 
     <LinearLayout
-        android:layout_width="0dip"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:orientation="vertical" >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/card_bg"
+        android:orientation="vertical"
+        android:padding="6dip" >
 
+        <ImageView
+            android:id="@+id/imageIcon"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:scaleType="fitCenter"
+            android:layout_gravity="center_horizontal" />
         <TextView
             android:id="@+id/imageTitle"
-            android:layout_width="fill_parent"
-            android:layout_height="0dip"
-            android:layout_weight="1"
-            android:gravity="top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:textColor="#aaaa00"
             android:textSize="6pt"
             android:textStyle="italic" />
@@ -30,18 +31,14 @@
         <TextView
             android:id="@+id/imageSet"
             android:layout_width="wrap_content"
-            android:layout_height="0dip"
-            android:layout_weight="1"
-            android:gravity="top"
+            android:layout_height="wrap_content"
             android:textSize="6pt" />
 
         <TextView
             android:id="@+id/imageDate"
             android:layout_width="wrap_content"
-            android:layout_height="0dip"
-            android:layout_weight="1"
-            android:gravity="top"
+            android:layout_height="wrap_content"
             android:textSize="6pt" />
-
     </LinearLayout>
-</LinearLayout>
+
+</FrameLayout>

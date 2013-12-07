@@ -52,4 +52,14 @@ public class Utils {
 		editor.putString(KEY_USER_ID, userId);
 		editor.commit();
 	}
+	
+	public static int dpToPx(int dp)
+	{
+	    return (int) (dp * FlickRandomApplication.getContext().getResources().getSystem().getDisplayMetrics().density);
+	}
+
+	public static int pxToDp(int px)
+	{
+	    return (int) (px / FlickRandomApplication.getContext().getResources().getSystem().getDisplayMetrics().density);
+	}
 }

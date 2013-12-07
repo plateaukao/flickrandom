@@ -25,15 +25,14 @@ import android.widget.TextView;
 
 import com.googlecode.flickrjandroid.photos.Photo;
 import com.googlecode.flickrjandroid.photos.PhotoList;
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 /**
  * @author Toby Yu(yuyang226@gmail.com)
@@ -72,9 +71,9 @@ public class LazyAdapter extends BaseAdapter {
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
 				a).threadPriority(Thread.NORM_PRIORITY - 2)
 				.denyCacheImageMultipleSizesInMemory()
-				.discCacheFileNameGenerator(new Md5FileNameGenerator())
+				//.discCacheFileNameGenerator(new Md5FileNameGenerator())
 				.tasksProcessingOrder(QueueProcessingType.LIFO)
-				.writeDebugLogs() // Remove for release app
+				//.writeDebugLogs() // Remove for release app
 				.build();
 
 		// Initialize ImageLoader with configuration.
@@ -84,9 +83,11 @@ public class LazyAdapter extends BaseAdapter {
 				.showImageOnLoading(R.drawable.ic_stub)
 				.showImageForEmptyUri(R.drawable.ic_empty)
 				.showImageOnFail(R.drawable.ic_error).cacheInMemory(true)
+				.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
 				// .cacheOnDisc(true)
 				.considerExifParams(true)
-				.displayer(new RoundedBitmapDisplayer(20)).build();
+				.build();
+				//.displayer(new RoundedBitmapDisplayer(20)).build();
 	}
 
 	public int getCount() {
@@ -202,7 +203,7 @@ public class LazyAdapter extends BaseAdapter {
 			tvSet.setText("");
 			if(photo.getDateTaken() != null)
 				tvDate.setText(photo.getDateTaken().toString());
-			imageLoader.displayImage(photo.getSmallUrl(), ivPhoto, options,
+			imageLoader.displayImage(photo.getMediumUrl(), ivPhoto, options,
 					animateFirstListener);
 		}
 	}
