@@ -8,7 +8,9 @@ import info.plateaukao.flickrandom.images.ImageUtils.DownloadedDrawable;
 import info.plateaukao.flickrandom.tasks.ImageDownloadTask;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,15 +54,40 @@ public class LazyAdapter extends BaseAdapter {
         if(convertView == null)
             vi = inflater.inflate(R.layout.row, null);
 
+        vi.setTag(photos.get(position));
+        vi.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String Url = ((Photo)v.getTag()).getUrl();
+
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Url));
+				activity.startActivity(browserIntent);
+				
+			}
+		});
+
         TextView text=(TextView)vi.findViewById(R.id.imageTitle);;
         ImageView image=(ImageView)vi.findViewById(R.id.imageIcon);
+        image.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String Url = ((Photo)((View) v.getParent()).getTag()).getLargeUrl();
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Url));
+				activity.startActivity(browserIntent);
+				
+			}
+		});
+
         Photo photo = photos.get(position);
         text.setText(photo.getTitle());
         if (image != null) {
         	ImageDownloadTask task = new ImageDownloadTask(image);
             Drawable drawable = new DownloadedDrawable(task);
             image.setImageDrawable(drawable);
-            task.execute(photo.getSmallSquareUrl());
+            //task.execute(photo.getSmallSquareUrl());
+            task.execute(photo.getThumbnailUrl());
         }
         
         ImageView viewIcon = (ImageView)vi.findViewById(R.id.viewIcon);
