@@ -6,9 +6,9 @@
 
     <ImageView
         android:id="@+id/imageIcon"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_marginRight="6dip"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginRight="10dp"
         android:src="@drawable/icon" />
 
     <LinearLayout
@@ -27,27 +27,21 @@
             android:textSize="6pt"
             android:textStyle="italic" />
 
-        <LinearLayout
-            android:layout_width="fill_parent"
+        <TextView
+            android:id="@+id/imageSet"
+            android:layout_width="wrap_content"
             android:layout_height="0dip"
-            android:layout_weight="0.3"
-            android:orientation="horizontal" 
-            android:layout_gravity="bottom" >"
+            android:layout_weight="1"
+            android:gravity="top"
+            android:textSize="6pt" />
 
-            <ImageView
-                android:id="@+id/viewIcon"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginRight="6dip"
-                android:src="@drawable/views" />
+        <TextView
+            android:id="@+id/imageDate"
+            android:layout_width="wrap_content"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:gravity="top"
+            android:textSize="6pt" />
 
-            <TextView
-                android:id="@+id/viewsText"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="marquee"
-                android:singleLine="true" />
-        </LinearLayout>
     </LinearLayout>
-
 </LinearLayout>

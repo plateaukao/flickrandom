@@ -106,10 +106,10 @@ public class LazyAdapter extends BaseAdapter {
 		status = STATUS_NORMAL;
 	}
 
-	public void clear(){
+	public void clear() {
 		photos.clear();
 	}
-	
+
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View vi = convertView;
 		// trigger loadmore
@@ -120,15 +120,22 @@ public class LazyAdapter extends BaseAdapter {
 			status = STATUS_LOADING;
 		}
 
-		if (convertView == null)
+		PhotoViewHolder holder;
+		if (convertView == null) {
 			vi = inflater.inflate(R.layout.row, null);
+			holder = new PhotoViewHolder(vi);
+			vi.setTag(holder);
+		} else {
+			holder = (PhotoViewHolder) vi.getTag();
+		}
 
-		vi.setTag(photos.get(position));
+		holder.updateData(photos.get(position));
+
 		vi.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				String Url = ((Photo) v.getTag()).getUrl();
+				String Url = ((PhotoViewHolder)v.getTag()).photo.getUrl();
 
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri
 						.parse(Url));
@@ -136,45 +143,6 @@ public class LazyAdapter extends BaseAdapter {
 
 			}
 		});
-
-		TextView text = (TextView) vi.findViewById(R.id.imageTitle);
-		;
-		ImageView image = (ImageView) vi.findViewById(R.id.imageIcon);
-		image.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				String Url = ((Photo) ((View) v.getParent()).getTag())
-						.getLargeUrl();
-				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri
-						.parse(Url));
-				activity.startActivity(browserIntent);
-
-			}
-		});
-
-		Photo photo = photos.get(position);
-		text.setText(photo.getTitle());
-		if (image != null) {
-			imageLoader.displayImage(photo.getSmallUrl(), image, options,
-					animateFirstListener);
-			/*
-			 * ImageDownloadTask task = new ImageDownloadTask(image); Drawable
-			 * drawable = new DownloadedDrawable(task);
-			 * image.setImageDrawable(drawable);
-			 * //task.execute(photo.getSmallSquareUrl());
-			 * task.execute(photo.getThumbnailUrl());
-			 */
-		}
-
-		ImageView viewIcon = (ImageView) vi.findViewById(R.id.viewIcon);
-		if (photo.getViews() >= 0) {
-			viewIcon.setImageResource(R.drawable.views);
-			TextView viewsText = (TextView) vi.findViewById(R.id.viewsText);
-			viewsText.setText(String.valueOf(photo.getViews()));
-		} else {
-			viewIcon.setImageBitmap(null);
-		}
 
 		return vi;
 	}
@@ -196,6 +164,46 @@ public class LazyAdapter extends BaseAdapter {
 					displayedImages.add(imageUri);
 				}
 			}
+		}
+	}
+
+	private class PhotoViewHolder {
+		TextView tvTitle;
+		TextView tvSet;
+		TextView tvDate;
+		ImageView ivPhoto;
+
+		private Photo photo;
+
+		public PhotoViewHolder(View v) {
+
+			ivPhoto = (ImageView) v.findViewById(R.id.imageIcon);
+			tvTitle = (TextView) v.findViewById(R.id.imageTitle);
+			tvSet = (TextView) v.findViewById(R.id.imageSet);
+			tvDate = (TextView) v.findViewById(R.id.imageDate);
+
+			ivPhoto.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					String Url = photo.getLargeUrl();
+					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri
+							.parse(Url));
+					activity.startActivity(browserIntent);
+
+				}
+			});
+		}
+
+		public void updateData(Photo p) {
+			this.photo = p;
+
+			tvTitle.setText(photo.getTitle());
+			tvSet.setText("");
+			if(photo.getDateTaken() != null)
+				tvDate.setText(photo.getDateTaken().toString());
+			imageLoader.displayImage(photo.getSmallUrl(), ivPhoto, options,
+					animateFirstListener);
 		}
 	}
 }
