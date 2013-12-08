@@ -1,7 +1,9 @@
 package info.plateaukao.flickrandom;
 
+import info.plateaukao.flickrandom.CV.BROWSE_CATEGORY;
 import info.plateaukao.flickrandom.images.LazyAdapter;
 import info.plateaukao.flickrandom.tasks.GetOAuthTokenTask;
+import info.plateaukao.flickrandom.tasks.LoadFavoritePhotostreamTask;
 import info.plateaukao.flickrandom.tasks.LoadRandomPhotostreamTask;
 import info.plateaukao.flickrandom.tasks.LoadUserTask;
 import info.plateaukao.flickrandom.tasks.OAuthTask;
@@ -26,7 +28,9 @@ public class MainActivity extends BaseActivity {
 
 	private GridView listView;
 	private LazyAdapter adapter;
-
+	
+	private BROWSE_CATEGORY browseMode = BROWSE_CATEGORY.CATEGORY_RANDOM;
+	
 	private OAuth oauth;
 	private User user;
 
@@ -66,6 +70,24 @@ public class MainActivity extends BaseActivity {
 		return true;
 	}
 
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		MenuItem mi_favorite = menu.findItem(R.id.mi_favorite);
+		MenuItem mi_random = menu.findItem(R.id.mi_random);
+		
+		if(browseMode == BROWSE_CATEGORY.CATEGORY_RANDOM){
+			mi_random.setChecked(true);
+			mi_favorite.setChecked(false);
+		}else{
+			mi_random.setChecked(false);
+			mi_favorite.setChecked(true);
+		}
+		
+		return super.onPrepareOptionsMenu(menu);
+	}
+
+
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
@@ -73,6 +95,28 @@ public class MainActivity extends BaseActivity {
 			((LazyAdapter) listView.getAdapter()).clear();
 			((LazyAdapter) listView.getAdapter()).notifyDataSetChanged();
 
+			load(Utils.getOAuthToken());
+			return true;
+		}
+		case R.id.mi_random: {
+			if(browseMode == BROWSE_CATEGORY.CATEGORY_RANDOM)
+				return true;
+			browseMode = BROWSE_CATEGORY.CATEGORY_RANDOM;
+			((LazyAdapter) listView.getAdapter()).clear();
+			((LazyAdapter) listView.getAdapter()).notifyDataSetChanged();
+			((LazyAdapter) listView.getAdapter()).setBrowseMode(browseMode);
+
+			load(Utils.getOAuthToken());
+			return true;
+		}
+		case R.id.mi_favorite: {
+			if(browseMode == BROWSE_CATEGORY.CATEGORY_FAVORITE)
+				return true;
+			browseMode = BROWSE_CATEGORY.CATEGORY_FAVORITE;
+			((LazyAdapter) listView.getAdapter()).clear();
+			((LazyAdapter) listView.getAdapter()).notifyDataSetChanged();
+			((LazyAdapter) listView.getAdapter()).setBrowseMode(browseMode);
+			
 			load(Utils.getOAuthToken());
 			return true;
 		}
@@ -103,8 +147,10 @@ public class MainActivity extends BaseActivity {
 		if (oauth != null) {
 			if (null == user)
 				new LoadUserTask(this).execute(oauth);
-			// new LoadPhotostreamTask(this, listView).execute(oauth);
-			new LoadRandomPhotostreamTask(this, adapter, 0).execute(oauth);
+			if(browseMode == BROWSE_CATEGORY.CATEGORY_RANDOM)
+				new LoadRandomPhotostreamTask(this, adapter, 0).execute(oauth);
+			else if (browseMode == BROWSE_CATEGORY.CATEGORY_FAVORITE)
+				new LoadFavoritePhotostreamTask(this, adapter, 0).execute(oauth);
 		}
 	}
 

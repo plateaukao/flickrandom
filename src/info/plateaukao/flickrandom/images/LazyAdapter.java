@@ -3,9 +3,10 @@
  */
 package info.plateaukao.flickrandom.images;
 
+import info.plateaukao.flickrandom.CV.BROWSE_CATEGORY;
 import info.plateaukao.flickrandom.R;
 import info.plateaukao.flickrandom.tasks.AddTagTask;
-import info.plateaukao.flickrandom.tasks.LoadRandomPhotostreamTask;
+import info.plateaukao.flickrandom.tasks.LoadFavoritePhotostreamTask;
 import info.plateaukao.flickrandom.utils.Utils;
 
 import java.util.Collections;
@@ -41,10 +42,6 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
-/**
- * @author Toby Yu(yuyang226@gmail.com)
- * 
- */
 public class LazyAdapter extends BaseAdapter {
 
 	private static int STATUS_NORMAL = 0;
@@ -63,6 +60,12 @@ public class LazyAdapter extends BaseAdapter {
 	DisplayImageOptions options;
 
 	private int currentPageCount;
+
+	private BROWSE_CATEGORY browseMode;
+
+	public void setBrowseMode(BROWSE_CATEGORY mode) {
+		browseMode = mode;
+	}
 
 	public void setCurrentPageCount(int pageCount) {
 		currentPageCount = pageCount;
@@ -121,8 +124,18 @@ public class LazyAdapter extends BaseAdapter {
 		View vi = convertView;
 		// trigger loadmore
 		if (getCount() - position < PRELOAD_WINDOW && status == STATUS_NORMAL) {
-			new LoadRandomPhotostreamTask(activity, this, currentPageCount + 1)
-					.execute(Utils.getOAuthToken());
+			switch (browseMode) {
+			case CATEGORY_FAVORITE:
+				new LoadFavoritePhotostreamTask(activity, this,
+						currentPageCount + 1).execute(Utils.getOAuthToken());
+				break;
+			case CATEGORY_RANDOM:
+				new LoadFavoritePhotostreamTask(activity, this,
+						currentPageCount + 1).execute(Utils.getOAuthToken());
+				break;
+			default:
+				break;
+			}
 
 			status = STATUS_LOADING;
 		}
@@ -212,9 +225,10 @@ public class LazyAdapter extends BaseAdapter {
 								"Favorite").execute(Utils.getOAuthToken());
 
 						// do animation
-						((ImageView)v).setImageResource(android.R.drawable.btn_star_big_on);
+						((ImageView) v)
+								.setImageResource(android.R.drawable.btn_star_big_on);
 						AnimatorSet set = ScaleUpStarAnimation(v);
-						set.addListener(new AnimatorListener(){
+						set.addListener(new AnimatorListener() {
 
 							@Override
 							public void onAnimationCancel(Animator arg0) {
@@ -228,18 +242,17 @@ public class LazyAdapter extends BaseAdapter {
 
 							@Override
 							public void onAnimationRepeat(Animator arg0) {
-								
+
 							}
 
 							@Override
 							public void onAnimationStart(Animator arg0) {
-								
+
 							}
-							
+
 						});
 						set.start();
-						
-								
+
 					}
 
 				}
@@ -253,10 +266,10 @@ public class LazyAdapter extends BaseAdapter {
 			tvSet.setText("");
 			tvSet.setVisibility(View.GONE);
 
-			if (photo.getDateTaken() != null){
+			if (photo.getDateTaken() != null) {
 				tvDate.setText(photo.getDateTaken().toString());
 				tvDate.setVisibility(View.VISIBLE);
-			}else
+			} else
 				tvDate.setVisibility(View.GONE);
 
 			if (hasTagWithName(photo, "Favorite")) {
@@ -279,12 +292,12 @@ public class LazyAdapter extends BaseAdapter {
 
 	private AnimatorSet ScaleUpStarAnimation(View v) {
 		AnimatorSet setUp = new AnimatorSet();
-		setUp.play(ObjectAnimator.ofFloat(v, View.SCALE_X, 1.0f, 1.5f))
-				.with(ObjectAnimator.ofFloat(v, View.SCALE_Y, 1.0f, 1.5f));
+		setUp.play(ObjectAnimator.ofFloat(v, View.SCALE_X, 1.0f, 1.5f)).with(
+				ObjectAnimator.ofFloat(v, View.SCALE_Y, 1.0f, 1.5f));
 		AnimatorSet setDown = new AnimatorSet();
-		setDown.play(ObjectAnimator.ofFloat(v, View.SCALE_X, 1.5f, 1.0f))
-				.with(ObjectAnimator.ofFloat(v, View.SCALE_Y, 1.5f, 1.0f));
-		
+		setDown.play(ObjectAnimator.ofFloat(v, View.SCALE_X, 1.5f, 1.0f)).with(
+				ObjectAnimator.ofFloat(v, View.SCALE_Y, 1.5f, 1.0f));
+
 		AnimatorSet set = new AnimatorSet();
 		set.playSequentially(setUp, setDown);
 		set.setDuration(300);
