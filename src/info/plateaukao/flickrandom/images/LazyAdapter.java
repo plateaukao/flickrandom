@@ -251,9 +251,13 @@ public class LazyAdapter extends BaseAdapter {
 
 			tvTitle.setText(photo.getTitle());
 			tvSet.setText("");
+			tvSet.setVisibility(View.GONE);
 
-			if (photo.getDateTaken() != null)
+			if (photo.getDateTaken() != null){
 				tvDate.setText(photo.getDateTaken().toString());
+				tvDate.setVisibility(View.VISIBLE);
+			}else
+				tvDate.setVisibility(View.GONE);
 
 			if (hasTagWithName(photo, "Favorite")) {
 				ivTag.setImageResource(android.R.drawable.btn_star_big_on);

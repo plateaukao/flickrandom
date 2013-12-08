@@ -14,7 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
+import android.widget.GridView;
 import android.widget.Toast;
 
 import com.googlecode.flickrjandroid.oauth.OAuth;
@@ -24,7 +24,7 @@ import com.googlecode.flickrjandroid.people.User;
 public class MainActivity extends BaseActivity {
 	public static final String CALLBACK_SCHEME = "flickrandom-oauth"; //$NON-NLS-1$
 
-	private ListView listView;
+	private GridView listView;
 	private LazyAdapter adapter;
 
 	private OAuth oauth;
@@ -35,7 +35,7 @@ public class MainActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		this.listView = (ListView) this.findViewById(R.id.imageList);
+		this.listView = (GridView) this.findViewById(R.id.imageList);
 		adapter = (LazyAdapter)this.getLastNonConfigurationInstance();
 		if(null == adapter)
 			adapter = new LazyAdapter(this);
