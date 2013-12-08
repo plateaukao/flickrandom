@@ -195,6 +195,7 @@ public class LazyAdapter extends BaseAdapter {
 		TextView tvDate;
 		ImageView ivPhoto;
 		ImageView ivTag;
+		ImageView ivShare;
 
 		private Photo photo;
 
@@ -205,6 +206,7 @@ public class LazyAdapter extends BaseAdapter {
 			tvSet = (TextView) v.findViewById(R.id.imageSet);
 			tvDate = (TextView) v.findViewById(R.id.imageDate);
 			ivTag = (ImageView) v.findViewById(R.id.imageTag);
+			ivShare = (ImageView) v.findViewById(R.id.imageShare);
 
 			ivPhoto.setOnClickListener(new View.OnClickListener() {
 
@@ -258,6 +260,20 @@ public class LazyAdapter extends BaseAdapter {
 					}
 
 				}
+			});
+
+			ivShare.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					Intent sendIntent = new Intent();
+					sendIntent.setAction(Intent.ACTION_SEND);
+					sendIntent.putExtra(Intent.EXTRA_TEXT, photo.getUrl());
+					sendIntent.setType("text/plain");
+					activity.startActivity(sendIntent);
+					
+				}
+				
 			});
 		}
 
