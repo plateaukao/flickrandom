@@ -4,13 +4,13 @@
 package info.plateaukao.flickrandom.tasks;
 
 import info.plateaukao.flickrandom.FlickrHelper;
+import info.plateaukao.flickrandom.images.LazyAdapter.PhotoViewHolder;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.googlecode.flickrjandroid.Flickr;
@@ -22,16 +22,16 @@ public class AddTagTask extends
 		AsyncTask<OAuth, Void, Photo> {
 	
 	private Activity activity;
-	private ImageView iv;
+	private PhotoViewHolder holder;
 	private Photo photo;
 	private String tag = "Favorites";
 
 	/**
 	 * @param flickrjAndroidSampleActivity
 	 */
-	public AddTagTask(Activity activity, ImageView v, Photo p, String tag) {
+	public AddTagTask(Activity activity, PhotoViewHolder holder, Photo p, String tag) {
 		this.activity = activity;
-		this.iv = v;
+		this.holder = holder;
 		this.photo = p;
 		if(null != tag)
 			this.tag = tag;
@@ -57,7 +57,8 @@ public class AddTagTask extends
 			tags[0] = tag;
 
 			f.getPhotosInterface().addTags(photo.getId(), tags);
-
+			photo.setTags(f.getPhotosInterface().getPhoto(photo.getId()).getTags());
+			
 			return photo;
 
 		} catch (Exception e) {
@@ -77,7 +78,8 @@ public class AddTagTask extends
 		boolean isFound = false;
 		// check if it's added
 		Toast.makeText(activity, "Tag: Favorites added!", Toast.LENGTH_SHORT).show();
-		iv.setImageResource(android.R.drawable.btn_star_big_on);
+		
+		holder.updateData(photo);
 	}
 
 }

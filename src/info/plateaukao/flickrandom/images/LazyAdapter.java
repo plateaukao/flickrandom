@@ -170,7 +170,7 @@ public class LazyAdapter extends BaseAdapter {
 		}
 	}
 
-	private class PhotoViewHolder {
+	public class PhotoViewHolder {
 		TextView tvTitle;
 		TextView tvSet;
 		TextView tvDate;
@@ -204,7 +204,7 @@ public class LazyAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					if(!hasTagWithName(photo, "Favorite"))
-						new AddTagTask(activity, (ImageView)v, photo, "Favorite").execute(Utils.getOAuthToken());
+						new AddTagTask(activity, PhotoViewHolder.this, photo, "Favorite").execute(Utils.getOAuthToken());
 
 				}
 			});
@@ -229,7 +229,7 @@ public class LazyAdapter extends BaseAdapter {
 	
 	boolean hasTagWithName(Photo photo, String tagName){
 		for(Tag tag: photo.getTags()){
-			if(tag.getValue().equals(tagName))
+			if(tag.getRaw().equals(tagName))
 				return true;
 		}
 		return false;
