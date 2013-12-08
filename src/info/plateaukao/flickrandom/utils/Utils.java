@@ -4,6 +4,7 @@ import info.plateaukao.flickrandom.FlickRandomApplication;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Resources;
 
 import com.googlecode.flickrjandroid.oauth.OAuth;
 import com.googlecode.flickrjandroid.oauth.OAuthToken;
@@ -55,11 +56,11 @@ public class Utils {
 	
 	public static int dpToPx(int dp)
 	{
-	    return (int) (dp * FlickRandomApplication.getContext().getResources().getSystem().getDisplayMetrics().density);
+		return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
 	}
 
 	public static int pxToDp(int px)
 	{
-	    return (int) (px / FlickRandomApplication.getContext().getResources().getSystem().getDisplayMetrics().density);
+	    return (int) (px / Resources.getSystem().getDisplayMetrics().density);
 	}
 }

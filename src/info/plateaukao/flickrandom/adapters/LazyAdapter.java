@@ -1,7 +1,7 @@
 /**
  * 
  */
-package info.plateaukao.flickrandom.images;
+package info.plateaukao.flickrandom.adapters;
 
 import info.plateaukao.flickrandom.CV.BROWSE_CATEGORY;
 import info.plateaukao.flickrandom.R;
@@ -53,6 +53,16 @@ public class LazyAdapter extends BaseAdapter {
 
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
+
+	/**** */
+	public interface OnClickListener{
+		public boolean onPhotoClickListener(View view, Photo photo);
+	}
+	private OnClickListener onclicklistener;
+	public void setOnClickListener(OnClickListener listener){
+		onclicklistener = listener;
+	}
+	/**** */
 
 	private Activity activity;
 	private PhotoList photos;
@@ -157,12 +167,10 @@ public class LazyAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
-				String Url = ((PhotoViewHolder) v.getTag()).photo.getUrl();
-
-				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri
-						.parse(Url));
+				Photo photo = ((PhotoViewHolder) v.getTag()).photo;
+				String Url = photo.getUrl();
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri .parse(Url));
 				activity.startActivity(browserIntent);
-
 			}
 		});
 
@@ -212,11 +220,12 @@ public class LazyAdapter extends BaseAdapter {
 
 				@Override
 				public void onClick(View v) {
-					String Url = photo.getLargeUrl();
-					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri
-							.parse(Url));
-					activity.startActivity(browserIntent);
-
+					if(onclicklistener == null || onclicklistener.onPhotoClickListener(v, photo) == false){
+						String Url = photo.getLargeUrl();
+						Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri
+								.parse(Url));
+						activity.startActivity(browserIntent);
+					}
 				}
 			});
 
@@ -295,7 +304,7 @@ public class LazyAdapter extends BaseAdapter {
 			} else
 				ivTag.setImageResource(android.R.drawable.btn_star_big_off);
 
-			imageLoader.displayImage(photo.getMediumUrl(), ivPhoto, options,
+			imageLoader.displayImage(photo.getSmallUrl(), ivPhoto, options,
 					animateFirstListener);
 		}
 	}
