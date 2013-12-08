@@ -41,8 +41,10 @@ public class MainActivity extends BaseActivity {
 
 		this.listView = (GridView) this.findViewById(R.id.imageList);
 		adapter = (LazyAdapter)this.getLastNonConfigurationInstance();
-		if(null == adapter)
+		if(null == adapter){
 			adapter = new LazyAdapter(this);
+			adapter.setBrowseMode(browseMode);
+		}
 		this.listView.setAdapter(adapter);
 
 		oauth = Utils.getOAuthToken();

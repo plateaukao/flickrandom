@@ -7,6 +7,7 @@ import info.plateaukao.flickrandom.CV.BROWSE_CATEGORY;
 import info.plateaukao.flickrandom.R;
 import info.plateaukao.flickrandom.tasks.AddTagTask;
 import info.plateaukao.flickrandom.tasks.LoadFavoritePhotostreamTask;
+import info.plateaukao.flickrandom.tasks.LoadRandomPhotostreamTask;
 import info.plateaukao.flickrandom.utils.Utils;
 
 import java.util.Collections;
@@ -61,7 +62,7 @@ public class LazyAdapter extends BaseAdapter {
 
 	private int currentPageCount;
 
-	private BROWSE_CATEGORY browseMode;
+	private BROWSE_CATEGORY browseMode = BROWSE_CATEGORY.CATEGORY_RANDOM;
 
 	public void setBrowseMode(BROWSE_CATEGORY mode) {
 		browseMode = mode;
@@ -118,6 +119,7 @@ public class LazyAdapter extends BaseAdapter {
 
 	public void clear() {
 		photos.clear();
+		currentPageCount = 0;
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -130,7 +132,7 @@ public class LazyAdapter extends BaseAdapter {
 						currentPageCount + 1).execute(Utils.getOAuthToken());
 				break;
 			case CATEGORY_RANDOM:
-				new LoadFavoritePhotostreamTask(activity, this,
+				new LoadRandomPhotostreamTask(activity, this,
 						currentPageCount + 1).execute(Utils.getOAuthToken());
 				break;
 			default:
