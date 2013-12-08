@@ -12,6 +12,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +24,7 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -73,9 +78,9 @@ public class LazyAdapter extends BaseAdapter {
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
 				a).threadPriority(Thread.NORM_PRIORITY - 2)
 				.denyCacheImageMultipleSizesInMemory()
-				//.discCacheFileNameGenerator(new Md5FileNameGenerator())
+				// .discCacheFileNameGenerator(new Md5FileNameGenerator())
 				.tasksProcessingOrder(QueueProcessingType.LIFO)
-				//.writeDebugLogs() // Remove for release app
+				// .writeDebugLogs() // Remove for release app
 				.build();
 
 		// Initialize ImageLoader with configuration.
@@ -87,9 +92,8 @@ public class LazyAdapter extends BaseAdapter {
 				.showImageOnFail(R.drawable.ic_error).cacheInMemory(true)
 				.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
 				// .cacheOnDisc(true)
-				.considerExifParams(true)
-				.build();
-				//.displayer(new RoundedBitmapDisplayer(20)).build();
+				.considerExifParams(true).build();
+		// .displayer(new RoundedBitmapDisplayer(20)).build();
 	}
 
 	public int getCount() {
@@ -138,7 +142,7 @@ public class LazyAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
-				String Url = ((PhotoViewHolder)v.getTag()).photo.getUrl();
+				String Url = ((PhotoViewHolder) v.getTag()).photo.getUrl();
 
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri
 						.parse(Url));
@@ -185,7 +189,7 @@ public class LazyAdapter extends BaseAdapter {
 			tvTitle = (TextView) v.findViewById(R.id.imageTitle);
 			tvSet = (TextView) v.findViewById(R.id.imageSet);
 			tvDate = (TextView) v.findViewById(R.id.imageDate);
-			ivTag = (ImageView)v.findViewById(R.id.imageTag);
+			ivTag = (ImageView) v.findViewById(R.id.imageTag);
 
 			ivPhoto.setOnClickListener(new View.OnClickListener() {
 
@@ -198,13 +202,45 @@ public class LazyAdapter extends BaseAdapter {
 
 				}
 			});
-			
+
 			ivTag.setOnClickListener(new View.OnClickListener() {
 
 				@Override
-				public void onClick(View v) {
-					if(!hasTagWithName(photo, "Favorite"))
-						new AddTagTask(activity, PhotoViewHolder.this, photo, "Favorite").execute(Utils.getOAuthToken());
+				public void onClick(final View v) {
+					if (!hasTagWithName(photo, "Favorite")) {
+						new AddTagTask(activity, PhotoViewHolder.this, photo,
+								"Favorite").execute(Utils.getOAuthToken());
+
+						// do animation
+						((ImageView)v).setImageResource(android.R.drawable.btn_star_big_on);
+						AnimatorSet set = ScaleUpStarAnimation(v);
+						set.addListener(new AnimatorListener(){
+
+							@Override
+							public void onAnimationCancel(Animator arg0) {
+								v.setVisibility(View.VISIBLE);
+							}
+
+							@Override
+							public void onAnimationEnd(Animator arg0) {
+								v.setVisibility(View.VISIBLE);
+							}
+
+							@Override
+							public void onAnimationRepeat(Animator arg0) {
+								
+							}
+
+							@Override
+							public void onAnimationStart(Animator arg0) {
+								
+							}
+							
+						});
+						set.start();
+						
+								
+					}
 
 				}
 			});
@@ -215,23 +251,40 @@ public class LazyAdapter extends BaseAdapter {
 
 			tvTitle.setText(photo.getTitle());
 			tvSet.setText("");
-			if(photo.getDateTaken() != null)
+
+			if (photo.getDateTaken() != null)
 				tvDate.setText(photo.getDateTaken().toString());
-			if(hasTagWithName(photo, "Favorite")){
+
+			if (hasTagWithName(photo, "Favorite")) {
 				ivTag.setImageResource(android.R.drawable.btn_star_big_on);
-			}else
+			} else
 				ivTag.setImageResource(android.R.drawable.btn_star_big_off);
-			
+
 			imageLoader.displayImage(photo.getMediumUrl(), ivPhoto, options,
 					animateFirstListener);
 		}
 	}
-	
-	boolean hasTagWithName(Photo photo, String tagName){
-		for(Tag tag: photo.getTags()){
-			if(tag.getRaw().equals(tagName))
+
+	boolean hasTagWithName(Photo photo, String tagName) {
+		for (Tag tag : photo.getTags()) {
+			if (tag.getRaw().equals(tagName))
 				return true;
 		}
 		return false;
+	}
+
+	private AnimatorSet ScaleUpStarAnimation(View v) {
+		AnimatorSet setUp = new AnimatorSet();
+		setUp.play(ObjectAnimator.ofFloat(v, View.SCALE_X, 1.0f, 1.5f))
+				.with(ObjectAnimator.ofFloat(v, View.SCALE_Y, 1.0f, 1.5f));
+		AnimatorSet setDown = new AnimatorSet();
+		setDown.play(ObjectAnimator.ofFloat(v, View.SCALE_X, 1.5f, 1.0f))
+				.with(ObjectAnimator.ofFloat(v, View.SCALE_Y, 1.5f, 1.0f));
+		
+		AnimatorSet set = new AnimatorSet();
+		set.playSequentially(setUp, setDown);
+		set.setDuration(300);
+		set.setInterpolator(new DecelerateInterpolator());
+		return set;
 	}
 }
