@@ -2,10 +2,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-
+        android:layout_gravity="center_horizontal"
+    	android:gravity="center"
     >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
@@ -16,18 +17,23 @@
         android:layout_gravity="center_horizontal"
     	android:gravity="center"
         android:orientation="vertical"
-        android:padding="6dip" >
+        android:padding="10dp"
+         >
 
         <ImageView
             android:id="@+id/imageIcon"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:scaleType="fitCenter"
-            android:layout_gravity="center_horizontal" />
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true"
+            />
         <TextView
             android:id="@+id/imageTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/imageIcon"
+            android:layout_alignLeft="@+id/imageIcon"
             android:textColor="#aaaa00"
             android:textSize="6pt"
             android:textStyle="italic" />
@@ -36,21 +42,36 @@
             android:id="@+id/imageSet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/imageTitle"
+            android:layout_alignLeft="@+id/imageIcon"
             android:textSize="6pt" />
 
         <TextView
             android:id="@+id/imageDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/imageSet"
+            android:layout_alignLeft="@+id/imageIcon"
             android:textSize="6pt" />
 
         <ImageView
             android:id="@+id/imageTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_below="@+id/imageIcon"
+            android:layout_alignRight="@+id/imageIcon"
+            android:layout_margin="5dp"
             android:src="@android:drawable/btn_star_big_off" />
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/imageShare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageIcon"
+            android:layout_toLeftOf="@+id/imageTag"
+            android:layout_margin="5dp"
+            android:src="@android:drawable/ic_menu_share" />
+
+    </RelativeLayout>
 
 </FrameLayout>

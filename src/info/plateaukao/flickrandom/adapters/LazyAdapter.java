@@ -1,7 +1,7 @@
 /**
  * 
  */
-package info.plateaukao.flickrandom.images;
+package info.plateaukao.flickrandom.adapters;
 
 import info.plateaukao.flickrandom.CV.BROWSE_CATEGORY;
 import info.plateaukao.flickrandom.R;
@@ -53,6 +53,16 @@ public class LazyAdapter extends BaseAdapter {
 
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
+
+	/**** */
+	public interface OnClickListener{
+		public boolean onPhotoClickListener(View view, Photo photo);
+	}
+	private OnClickListener onclicklistener;
+	public void setOnClickListener(OnClickListener listener){
+		onclicklistener = listener;
+	}
+	/**** */
 
 	private Activity activity;
 	private PhotoList photos;
@@ -157,12 +167,10 @@ public class LazyAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
-				String Url = ((PhotoViewHolder) v.getTag()).photo.getUrl();
-
-				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri
-						.parse(Url));
+				Photo photo = ((PhotoViewHolder) v.getTag()).photo;
+				String Url = photo.getUrl();
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri .parse(Url));
 				activity.startActivity(browserIntent);
-
 			}
 		});
 
@@ -195,6 +203,7 @@ public class LazyAdapter extends BaseAdapter {
 		TextView tvDate;
 		ImageView ivPhoto;
 		ImageView ivTag;
+		ImageView ivShare;
 
 		private Photo photo;
 
@@ -205,16 +214,18 @@ public class LazyAdapter extends BaseAdapter {
 			tvSet = (TextView) v.findViewById(R.id.imageSet);
 			tvDate = (TextView) v.findViewById(R.id.imageDate);
 			ivTag = (ImageView) v.findViewById(R.id.imageTag);
+			ivShare = (ImageView) v.findViewById(R.id.imageShare);
 
 			ivPhoto.setOnClickListener(new View.OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
-					String Url = photo.getLargeUrl();
-					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri
-							.parse(Url));
-					activity.startActivity(browserIntent);
-
+					if(onclicklistener == null || onclicklistener.onPhotoClickListener(v, photo) == false){
+						String Url = photo.getLargeUrl();
+						Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri
+								.parse(Url));
+						activity.startActivity(browserIntent);
+					}
 				}
 			});
 
@@ -259,6 +270,20 @@ public class LazyAdapter extends BaseAdapter {
 
 				}
 			});
+
+			ivShare.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					Intent sendIntent = new Intent();
+					sendIntent.setAction(Intent.ACTION_SEND);
+					sendIntent.putExtra(Intent.EXTRA_TEXT, photo.getUrl());
+					sendIntent.setType("text/plain");
+					activity.startActivity(sendIntent);
+					
+				}
+				
+			});
 		}
 
 		public void updateData(Photo p) {
@@ -279,7 +304,7 @@ public class LazyAdapter extends BaseAdapter {
 			} else
 				ivTag.setImageResource(android.R.drawable.btn_star_big_off);
 
-			imageLoader.displayImage(photo.getMediumUrl(), ivPhoto, options,
+			imageLoader.displayImage(photo.getSmallUrl(), ivPhoto, options,
 					animateFirstListener);
 		}
 	}

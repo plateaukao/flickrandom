@@ -4,7 +4,7 @@
 package info.plateaukao.flickrandom.tasks;
 
 import info.plateaukao.flickrandom.FlickrHelper;
-import info.plateaukao.flickrandom.images.LazyAdapter;
+import info.plateaukao.flickrandom.adapters.LazyAdapter;
 
 import java.util.HashSet;
 import java.util.Random;

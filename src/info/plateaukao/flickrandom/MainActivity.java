@@ -1,7 +1,9 @@
 package info.plateaukao.flickrandom;
 
 import info.plateaukao.flickrandom.CV.BROWSE_CATEGORY;
-import info.plateaukao.flickrandom.images.LazyAdapter;
+import info.plateaukao.flickrandom.ScaleImageView.SCALE_STATUS;
+import info.plateaukao.flickrandom.adapters.LazyAdapter;
+import info.plateaukao.flickrandom.adapters.LazyAdapter.OnClickListener;
 import info.plateaukao.flickrandom.tasks.GetOAuthTokenTask;
 import info.plateaukao.flickrandom.tasks.LoadFavoritePhotostreamTask;
 import info.plateaukao.flickrandom.tasks.LoadRandomPhotostreamTask;
@@ -11,22 +13,29 @@ import info.plateaukao.flickrandom.utils.Utils;
 
 import java.util.Locale;
 
+import android.animation.Animator;
 import android.content.Intent;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.googlecode.flickrjandroid.oauth.OAuth;
 import com.googlecode.flickrjandroid.oauth.OAuthToken;
 import com.googlecode.flickrjandroid.people.User;
+import com.googlecode.flickrjandroid.photos.Photo;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements OnClickListener {
 	public static final String CALLBACK_SCHEME = "flickrandom-oauth"; //$NON-NLS-1$
 
 	private GridView listView;
+	private ScaleImageView iv;
 	private LazyAdapter adapter;
 	
 	private BROWSE_CATEGORY browseMode = BROWSE_CATEGORY.CATEGORY_RANDOM;
@@ -39,13 +48,29 @@ public class MainActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		this.listView = (GridView) this.findViewById(R.id.imageList);
+		iv = (ScaleImageView) this.findViewById(R.id.imageScale);
+		iv.setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				ScaleImageView siv = (ScaleImageView)v;
+				if(siv.scaleStatus() != SCALE_STATUS.SCALE_DOWN){
+					siv.startScaleDownAnimation();
+				}
+				
+			}
+			
+		});
+
+		listView = (GridView) this.findViewById(R.id.imageList);
+
 		adapter = (LazyAdapter)this.getLastNonConfigurationInstance();
 		if(null == adapter){
 			adapter = new LazyAdapter(this);
 			adapter.setBrowseMode(browseMode);
 		}
+
 		this.listView.setAdapter(adapter);
+		adapter.setOnClickListener(this);
 
 		oauth = Utils.getOAuthToken();
 		if (oauth == null || oauth.getUser() == null) {
@@ -230,5 +255,43 @@ public class MainActivity extends BaseActivity {
 				oauth = result;
 			load(oauth);
 		}
+	}
+
+
+	@Override
+	public boolean onPhotoClickListener(View view, Photo photo) {
+		final Rect startBounds = new Rect();
+		final Rect finalBounds = new Rect();
+		view.getGlobalVisibleRect(startBounds);
+		
+        final Point globalOffset = new Point();
+        findViewById(R.id.container).getGlobalVisibleRect(finalBounds, globalOffset);
+        startBounds.offset(-globalOffset.x, -globalOffset.y);
+
+		iv.setImageDrawable(((ImageView)view).getDrawable());
+		iv.startScaleUpAnimation(startBounds, new Animator.AnimatorListener() {
+			
+			@Override
+			public void onAnimationStart(Animator animation) {
+
+			}
+			
+			@Override
+			public void onAnimationRepeat(Animator animation) {
+				
+			}
+			
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				
+			}
+			
+			@Override
+			public void onAnimationCancel(Animator animation) {
+				
+			}
+		});
+
+		return true;
 	}
 }
