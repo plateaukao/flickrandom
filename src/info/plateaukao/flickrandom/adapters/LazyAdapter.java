@@ -304,7 +304,7 @@ public class LazyAdapter extends BaseAdapter {
 			} else
 				ivTag.setImageResource(android.R.drawable.btn_star_big_off);
 
-			imageLoader.displayImage(photo.getSmallUrl(), ivPhoto, options,
+			imageLoader.displayImage(photo.getMediumUrl(), ivPhoto, options,
 					animateFirstListener);
 		}
 	}

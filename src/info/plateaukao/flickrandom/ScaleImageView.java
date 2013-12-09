@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -171,20 +170,26 @@ public class ScaleImageView extends ImageView {
         // scale the image to outer bounds
 
         if (yRatio <= xRatio) {
+        	int offset = canvas.getWidth() / 2 - (startBounds.right + startBounds.left)/2;
+        	
         	canvasClipBounds.left = (int)(startBounds.left + (imageWidth*(xRatio-yRatio))/2);
         	canvasClipBounds.left -=  (finalRatio - yRatio)*imageWidth/2 * expandRatio;
+        	canvasClipBounds.left += offset * expandRatio;
         	
         	canvasClipBounds.right = (int)(startBounds.right - (imageWidth*(xRatio - yRatio))/2);
         	canvasClipBounds.right +=  (finalRatio - yRatio)*imageWidth/2 * expandRatio;
+        	canvasClipBounds.right += offset * expandRatio;
 
         	canvasClipBounds.top = (int)(startBounds.top * (1 - expandRatio));
         	canvasClipBounds.bottom = (int)(startBounds.bottom + (canvas.getHeight() - startBounds.bottom) * expandRatio);
 
+
         } else {
+        	
+        	int offset = canvas.getHeight() / 2 - (startBounds.bottom+startBounds.top)/2;
+        	
         	canvasClipBounds.left = (int)(startBounds.left * (1 - expandRatio));
         	canvasClipBounds.right = (int)(startBounds.right + (canvas.getWidth() - startBounds.right) * expandRatio);
-
-        	int offset = canvas.getHeight() / 2 - (startBounds.bottom+startBounds.top)/2;
 
         	canvasClipBounds.top = (int)(startBounds.top + (imageHeight *(yRatio-xRatio))/2);
         	canvasClipBounds.top -=  (finalRatio - xRatio)*imageHeight/2 * expandRatio;
