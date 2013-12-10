@@ -158,6 +158,15 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 		return super.onMenuItemSelected(featureId, item);
 	}
 
+	@Override
+	public void onBackPressed() {
+		if(iv.scaleStatus() == SCALE_STATUS.SCALE_UP)
+			iv.startScaleDownAnimation();
+		else
+			super.onBackPressed();
+	}
+
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -248,6 +257,7 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 	public boolean onPhotoClickListener(View view, Photo photo) {
 		final Rect startBounds = new Rect();
 		final Rect finalBounds = new Rect();
+		final String url = photo.getMediumUrl();
 		view.getGlobalVisibleRect(startBounds);
 		
         final Point globalOffset = new Point();
