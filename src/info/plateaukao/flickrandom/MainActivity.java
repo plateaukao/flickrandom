@@ -84,6 +84,20 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 
 	
 	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		browseMode = BROWSE_CATEGORY.valueOf(savedInstanceState.getString("browsemode"));
+	}
+
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString("browsemode", browseMode.name());
+	}
+
+
+	@Override
 	@Deprecated
 	public Object onRetainNonConfigurationInstance() {
 		return adapter;
