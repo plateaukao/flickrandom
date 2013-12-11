@@ -34,6 +34,7 @@ import android.widget.TextView;
 import com.googlecode.flickrjandroid.photos.Photo;
 import com.googlecode.flickrjandroid.photos.PhotoList;
 import com.googlecode.flickrjandroid.tags.Tag;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -55,13 +56,16 @@ public class LazyAdapter extends BaseAdapter {
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 
 	/**** */
-	public interface OnClickListener{
+	public interface OnClickListener {
 		public boolean onPhotoClickListener(View view, Photo photo);
 	}
+
 	private OnClickListener onclicklistener;
-	public void setOnClickListener(OnClickListener listener){
+
+	public void setOnClickListener(OnClickListener listener) {
 		onclicklistener = listener;
 	}
+
 	/**** */
 
 	private Activity activity;
@@ -76,6 +80,28 @@ public class LazyAdapter extends BaseAdapter {
 
 	public void setBrowseMode(BROWSE_CATEGORY mode) {
 		browseMode = mode;
+		switch (browseMode) {
+		case CATEGORY_RANDOM: {
+			options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.ic_stub)
+					.showImageForEmptyUri(R.drawable.ic_empty).showImageOnFail(R.drawable.ic_error).cacheInMemory(true)
+					.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+					.cacheOnDisc(false)
+					.cacheInMemory(true)
+					// .cacheOnDisc(true)
+					.considerExifParams(true).build();
+
+		}
+		case CATEGORY_FAVORITE: {
+			options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.ic_stub)
+					.showImageForEmptyUri(R.drawable.ic_empty).showImageOnFail(R.drawable.ic_error).cacheInMemory(true)
+					.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+					.cacheOnDisc(true)
+					.cacheInMemory(true)
+					.considerExifParams(true).build();
+		}
+			break;
+		default:
+		}
 	}
 
 	public void setCurrentPageCount(int pageCount) {
@@ -86,12 +112,10 @@ public class LazyAdapter extends BaseAdapter {
 		activity = a;
 		photos = new PhotoList();
 
-		inflater = (LayoutInflater) activity
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
-				a).threadPriority(Thread.NORM_PRIORITY - 2)
-				.denyCacheImageMultipleSizesInMemory()
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(a)
+				.threadPriority(Thread.NORM_PRIORITY - 2).denyCacheImageMultipleSizesInMemory()
 				// .discCacheFileNameGenerator(new Md5FileNameGenerator())
 				.tasksProcessingOrder(QueueProcessingType.LIFO)
 				// .writeDebugLogs() // Remove for release app
@@ -100,10 +124,8 @@ public class LazyAdapter extends BaseAdapter {
 		// Initialize ImageLoader with configuration.
 		ImageLoader.getInstance().init(config);
 
-		options = new DisplayImageOptions.Builder()
-				.showImageOnLoading(R.drawable.ic_stub)
-				.showImageForEmptyUri(R.drawable.ic_empty)
-				.showImageOnFail(R.drawable.ic_error).cacheInMemory(true)
+		options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.ic_stub)
+				.showImageForEmptyUri(R.drawable.ic_empty).showImageOnFail(R.drawable.ic_error).cacheInMemory(true)
 				.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
 				// .cacheOnDisc(true)
 				.considerExifParams(true).build();
@@ -138,12 +160,10 @@ public class LazyAdapter extends BaseAdapter {
 		if (getCount() - position < PRELOAD_WINDOW && status == STATUS_NORMAL) {
 			switch (browseMode) {
 			case CATEGORY_FAVORITE:
-				new LoadFavoritePhotostreamTask(activity, this,
-						currentPageCount + 1).execute(Utils.getOAuthToken());
+				new LoadFavoritePhotostreamTask(activity, this, currentPageCount + 1).execute(Utils.getOAuthToken());
 				break;
 			case CATEGORY_RANDOM:
-				new LoadRandomPhotostreamTask(activity, this,
-						currentPageCount + 1).execute(Utils.getOAuthToken());
+				new LoadRandomPhotostreamTask(activity, this, currentPageCount + 1).execute(Utils.getOAuthToken());
 				break;
 			default:
 				break;
@@ -169,7 +189,7 @@ public class LazyAdapter extends BaseAdapter {
 			public void onClick(View v) {
 				Photo photo = ((PhotoViewHolder) v.getTag()).photo;
 				String Url = photo.getUrl();
-				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri .parse(Url));
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Url));
 				activity.startActivity(browserIntent);
 			}
 		});
@@ -177,15 +197,12 @@ public class LazyAdapter extends BaseAdapter {
 		return vi;
 	}
 
-	private static class AnimateFirstDisplayListener extends
-			SimpleImageLoadingListener {
+	private static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
 
-		static final List<String> displayedImages = Collections
-				.synchronizedList(new LinkedList<String>());
+		static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
 
 		@Override
-		public void onLoadingComplete(String imageUri, View view,
-				Bitmap loadedImage) {
+		public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 			if (loadedImage != null) {
 				ImageView imageView = (ImageView) view;
 				boolean firstDisplay = !displayedImages.contains(imageUri);
@@ -220,10 +237,9 @@ public class LazyAdapter extends BaseAdapter {
 
 				@Override
 				public void onClick(View v) {
-					if(onclicklistener == null || onclicklistener.onPhotoClickListener(v, photo) == false){
+					if (onclicklistener == null || onclicklistener.onPhotoClickListener(v, photo) == false) {
 						String Url = photo.getLargeUrl();
-						Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri
-								.parse(Url));
+						Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Url));
 						activity.startActivity(browserIntent);
 					}
 				}
@@ -234,12 +250,10 @@ public class LazyAdapter extends BaseAdapter {
 				@Override
 				public void onClick(final View v) {
 					if (!hasTagWithName(photo, "Favorite")) {
-						new AddTagTask(activity, PhotoViewHolder.this, photo,
-								"Favorite").execute(Utils.getOAuthToken());
+						new AddTagTask(activity, PhotoViewHolder.this, photo, "Favorite").execute(Utils.getOAuthToken());
 
 						// do animation
-						((ImageView) v)
-								.setImageResource(android.R.drawable.btn_star_big_on);
+						((ImageView) v).setImageResource(android.R.drawable.btn_star_big_on);
 						AnimatorSet set = ScaleUpStarAnimation(v);
 						set.addListener(new AnimatorListener() {
 
@@ -280,9 +294,9 @@ public class LazyAdapter extends BaseAdapter {
 					sendIntent.putExtra(Intent.EXTRA_TEXT, photo.getUrl());
 					sendIntent.setType("text/plain");
 					activity.startActivity(sendIntent);
-					
+
 				}
-				
+
 			});
 		}
 
@@ -304,8 +318,7 @@ public class LazyAdapter extends BaseAdapter {
 			} else
 				ivTag.setImageResource(android.R.drawable.btn_star_big_off);
 
-			imageLoader.displayImage(photo.getMediumUrl(), ivPhoto, options,
-					animateFirstListener);
+			imageLoader.displayImage(photo.getMediumUrl(), ivPhoto, options, animateFirstListener);
 		}
 	}
 
