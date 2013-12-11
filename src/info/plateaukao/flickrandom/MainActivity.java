@@ -268,7 +268,7 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 
 
 	@Override
-	public boolean onPhotoClickListener(View view, Photo photo) {
+	public boolean onPhotoClickListener(View view, final Photo photo) {
 		final Rect startBounds = new Rect();
 		final Rect finalBounds = new Rect();
 		final String url = photo.getMediumUrl();
@@ -293,7 +293,12 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 			
 			@Override
 			public void onAnimationEnd(Animator animation) {
-				
+                Intent intent = new Intent(MainActivity.this, ImagePagerActivity.class);
+                String[] IMAGES = new String[1];
+                IMAGES[0] = photo.getLargeUrl();
+
+                intent.putExtra(CV.INTENT_IMAGES, IMAGES);
+                startActivity(intent);
 			}
 			
 			@Override
