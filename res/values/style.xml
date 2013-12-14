@@ -54,4 +54,9 @@
 		<item name="android:ellipsize">end</item>
 	</style>
 
+  <style name="Theme.Transparent" parent="AppTheme">
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+  </style>
+
 </resources>

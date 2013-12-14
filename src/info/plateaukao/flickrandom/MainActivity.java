@@ -208,7 +208,10 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 	public void onResume() {
 		super.onResume();
 
-
+		if(iv.scaleStatus() == SCALE_STATUS.SCALE_UP){
+			iv.startScaleDownAnimation();
+		}
+		
 		Intent intent = getIntent();
 		String scheme = intent.getScheme();
 		
@@ -294,11 +297,13 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 			@Override
 			public void onAnimationEnd(Animator animation) {
                 Intent intent = new Intent(MainActivity.this, ImagePagerActivity.class);
-                String[] IMAGES = new String[1];
+                String[] IMAGES = new String[2];
                 IMAGES[0] = photo.getLargeUrl();
+                IMAGES[1] = photo.getLargeUrl();
 
                 intent.putExtra(CV.INTENT_IMAGES, IMAGES);
                 startActivity(intent);
+                overridePendingTransition(0, 0);
 			}
 			
 			@Override

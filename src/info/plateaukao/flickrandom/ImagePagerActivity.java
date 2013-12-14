@@ -47,7 +47,7 @@ public class ImagePagerActivity extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.imagepager);
-
+		
 		Bundle bundle = getIntent().getExtras();
 		assert bundle != null;
 		String[] imageUrls = bundle.getStringArray(CV.INTENT_IMAGES);
@@ -71,6 +71,8 @@ public class ImagePagerActivity extends BaseActivity {
 		pager = (ViewPager) findViewById(R.id.pager);
 		pager.setAdapter(new ImagePagerAdapter(imageUrls));
 		pager.setCurrentItem(pagerPosition);
+		pager.setPageMargin(0);
+		pager.setPadding(0, 0, 0, 0);
 	}
 
 	@Override
